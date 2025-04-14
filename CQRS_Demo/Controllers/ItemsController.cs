@@ -1,5 +1,8 @@
-﻿using CQRS_Library.Data.Models;
+﻿using CQRS_Library.CQRS.Commands;
+using CQRS_Library.CQRS.Queries;
+using CQRS_Library.Data.Models;
 using CQRS_Library.Repos;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,14 +13,18 @@ namespace CQRS_Demo.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly IItemsRepository _itemsRepository;
-        public ItemsController(IItemsRepository itemsRepository)
+        private readonly IMediator _mediator;
+
+        public ItemsController(IItemsRepository itemsRepository, IMediator mediator)
         {
             _itemsRepository = itemsRepository;
+            _mediator = mediator;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllItems()
         {
-            var items = await _itemsRepository.GetAllItems();
+            var items = await _mediator.Send(new GetAllItems());
             return Ok(items);
         }
         [HttpPost]
@@ -27,8 +34,8 @@ namespace CQRS_Demo.Controllers
             {
                 return BadRequest("Item cannot be null");
             }
-            await _itemsRepository.AddItem(item);
-            return CreatedAtAction(nameof(GetAllItems), new { id = item.Id }, item);
+           var Item =  await _mediator.Send(new AddItemCommand(item));
+            return Ok(Item);
         }
     }
 }
