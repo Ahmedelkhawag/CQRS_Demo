@@ -13,7 +13,7 @@ namespace CQRS_Library.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
-        public DbSet<Items>  Items { get; set; }
+        public DbSet<Item>  Items { get; set; }
 
     }
 }
